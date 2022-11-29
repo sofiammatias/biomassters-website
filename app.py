@@ -6,12 +6,16 @@ import pandas as pd
 
 
 '''
-# TaxiFare Model
+# BioMassters DataSet App
 '''
 
 st.markdown('''
-This is a model to estimate/predict taxi fare rides in NY city
+This is an app to download data for the BioMassters challenge
 ''')
+
+st.header("""
+          Load Data
+          """)
 
 today = datetime.date.today()
 now = datetime.datetime.now()
@@ -43,21 +47,21 @@ passengers = st.slider('Select number of passengers', 1, 8, 2)
 
 # Calling API URL
 
-url = 'https://taxifare-wsbi2k6wha-ew.a.run.app/predict'
+# url = 'https://taxifare-wsbi2k6wha-ew.a.run.app/predict'
 
-if url == 'https://taxifare.lewagon.ai/predict':
+# if url == 'https://taxifare.lewagon.ai/predict':
 
-    st.markdown('Maybe you want to use your own API for the prediction, not the one provided by Le Wagon...')
+#    st.markdown('Maybe you want to use your own API for the prediction, not the one provided by Le Wagon...')
 
 
-url_req = f"""https://taxifare-wsbi2k6wha-ew.a.run.app/predict?pickup_datetime={date} {time}&pickup_longitude={pickup_long}&pickup_latitude={pickup_lat}&dropoff_longitude={dropoff_long}&dropoff_latitude={dropoff_lat}&passenger_count={passengers}"""
+#url_req = f"""https://taxifare-wsbi2k6wha-ew.a.run.app/predict?pickup_datetime={date} {time}&pickup_longitude={pickup_long}&pickup_latitude={pickup_lat}&dropoff_longitude={dropoff_long}&dropoff_latitude={dropoff_lat}&passenger_count={passengers}"""
 
-fare = requests.get(url_req)
+# fare = requests.get(url_req)
 
-final_fare = round (float(fare.text.split(':')[1].replace('}', '').strip()), ndigits=2)
-# fare = 5.4
+# final_fare = round (float(fare.text.split(':')[1].replace('}', '').strip()), ndigits=2)
+fare = 5.4
 
-st.markdown (f"""## Fare Estimation: ${final_fare}""")
+st.markdown (f"""## Fare Estimation: ${fare}""")
 
 df = pd.DataFrame(
     [[pickup_lat, pickup_long],[dropoff_lat, dropoff_long]],
