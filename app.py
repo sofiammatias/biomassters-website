@@ -1,75 +1,166 @@
 import streamlit as st
-import datetime
+import tifffile
 import requests
 import pandas as pd
+import streamlit as st
+import os
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from contextlib import contextmanager, redirect_stdout
+from io import StringIO
+
 
 
 
 '''
-# BioMassters DataSet App
+# BioMassters App
 '''
 
-st.markdown('''
-This is an app to download data for the BioMassters challenge
+st.markdown(f'''
+See an image being predicted by our model in real time!!
 ''')
 
-st.header("""
-          Load Data
-          """)
+st.image('https://images.unsplash.com/photo-1604009506606-fd4989d50e6d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80')
+#         caption='Photo by <a href="https://unsplash.com/@chelseabock?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Chelsea Bock</a> on <a href="https://unsplash.com/s/photos/forest?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>')
 
-today = datetime.date.today()
-now = datetime.datetime.now()
+st.markdown('''
+            See the BioMassters challenge in this link: [https://www.drivendata.org/competitions/99/biomass-estimation/page/534/](https://www.drivendata.org/competitions/99/biomass-estimation/page/534/)
+            ''')
+
 
 col1, col2 = st.columns(2)
 
-with col1:
-    date = st.date_input("Date", today)
-
-with col2:
-    time = st.time_input('Time', now.time())
-
-col1, col2, col3, col4 = st.columns(4)
+uploaded_file1 = None
+uploaded_file2 = None
 
 with col1:
-    pickup_lat = st.number_input('Pickup Latitude', 40.783282)
+    uploaded_file1 = st.file_uploader("Choose S1 file:")
 
 with col2:
-    pickup_long = st.number_input('Pickup Longitude', -73.950655)
+    uploaded_file2 = st.file_uploader("Choose S2 file:")
 
-with col3:
-    dropoff_lat = st.number_input('Dropoff Latitude', 40.769802)
+if (uploaded_file1 is not None):
+    with st.expander("S1 SATELLITE IMAGES"):
+        col1, col2 = st.columns(2)
+        XS1 = tifffile.imread(uploaded_file1)
+        with col1:
+            fig1 = plt.figure()
+            plt.xticks([])
+            plt.yticks([])
+            plt.imshow(XS1[:,:,0])
+            st.pyplot(fig1)
+            fig2 = plt.figure()
+            plt.xticks([])
+            plt.yticks([])
+            plt.imshow(XS1[:,:,2])
+            st.pyplot(fig2)
+        with col2:
+            fig3 = plt.figure()
+            plt.xticks([])
+            plt.yticks([])
+            plt.imshow(XS1[:,:,1])
+            st.pyplot(fig3)
+            fig4 = plt.figure()
+            plt.xticks([])
+            plt.yticks([])
+            plt.imshow(XS1[:,:,3])
+            st.pyplot(fig4)
 
-with col4:
-    dropoff_long = st.number_input('Dropoff Longitude', -73.984365)
+if (uploaded_file2 is not None):
+    with st.expander("S2 SATELLITE IMAGES"):
+        col1, col2, col3 = st.columns(3)
+        XS2 = tifffile.imread(uploaded_file2)
+        with col1:
+            fig5 = plt.figure()
+            plt.xticks([])
+            plt.yticks([])
+            plt.imshow(XS2[:,:,0])
+            st.pyplot(fig5)
+            fig6 = plt.figure()
+            plt.xticks([])
+            plt.yticks([])
+            plt.imshow(XS2[:,:,3])
+            st.pyplot(fig6)
+            fig7 = plt.figure()
+            plt.xticks([])
+            plt.yticks([])
+            plt.imshow(XS2[:,:,6])
+            st.pyplot(fig7)
+            fig8 = plt.figure()
+            plt.xticks([])
+            plt.yticks([])
+            plt.imshow(XS2[:,:,9])
+            st.pyplot(fig8)
+
+        with col2:
+            fig9 = plt.figure()
+            plt.xticks([])
+            plt.yticks([])
+            plt.imshow(XS2[:,:,1])
+            st.pyplot(fig9)
+            fig10 = plt.figure()
+            plt.xticks([])
+            plt.yticks([])
+            plt.imshow(XS2[:,:,4])
+            st.pyplot(fig10)
+            fig11 = plt.figure()
+            plt.xticks([])
+            plt.yticks([])
+            plt.imshow(XS2[:,:,7])
+            st.pyplot(fig11)
+            fig12 = plt.figure()
+            plt.xticks([])
+            plt.yticks([])
+            plt.imshow(XS2[:,:,10])
+            st.pyplot(fig12)
+
+        with col3:
+            fig13 = plt.figure()
+            plt.xticks([])
+            plt.yticks([])
+            plt.imshow(XS2[:,:,2])
+            st.pyplot(fig13)
+            fig14 = plt.figure()
+            plt.xticks([])
+            plt.yticks([])
+            plt.imshow(XS2[:,:,5])
+            st.pyplot(fig14)
+            fig15 = plt.figure()
+            plt.xticks([])
+            plt.yticks([])
+            plt.imshow(XS2[:,:,8])
+            st.pyplot(fig15)
+
+'''
+# Predicted Image
+'''
+
+if (uploaded_file1 is not None) and (uploaded_file2 is not None):
+    url = 'https://biomassters-wsbi2k6wha-ew.a.run.app/predict/'
+    #files = [('files', tifffile.imread(uploaded_file1)), ('files', tifffile.imread(uploaded_file2))]
+    files = [('files', XS1), ('files', XS2)]
+
+    response = requests.post(url=url, files=files).json()
+
+    array =np.array(response["file"]).reshape(256,256,1)/256
+
+    fig = plt.figure()
+    plt.xticks([])
+    plt.yticks([])
+    plt.imshow(array)
+    st.pyplot(fig)
 
 
-passengers = st.slider('Select number of passengers', 1, 8, 2)
+uploaded_filey = st.file_uploader("Choose a target file:")
 
-# Calling API URL
-
-# url = 'https://taxifare-wsbi2k6wha-ew.a.run.app/predict'
-
-# if url == 'https://taxifare.lewagon.ai/predict':
-
-#    st.markdown('Maybe you want to use your own API for the prediction, not the one provided by Le Wagon...')
-
-
-#url_req = f"""https://taxifare-wsbi2k6wha-ew.a.run.app/predict?pickup_datetime={date} {time}&pickup_longitude={pickup_long}&pickup_latitude={pickup_lat}&dropoff_longitude={dropoff_long}&dropoff_latitude={dropoff_lat}&passenger_count={passengers}"""
-
-# fare = requests.get(url_req)
-
-# final_fare = round (float(fare.text.split(':')[1].replace('}', '').strip()), ndigits=2)
-fare = 5.4
-
-st.markdown (f"""## Fare Estimation: ${fare}""")
-
-df = pd.DataFrame(
-    [[pickup_lat, pickup_long],[dropoff_lat, dropoff_long]],
-    columns=['lat', 'lon'])
-
-st.map(df)
-
-# 2. Let's build a dictionary containing the parameters for our API...
-# 3. Let's call our API using the `requests` package...
-# 4. Let's retrieve the prediction from the **JSON** returned by the API...
-## Finally, we can display the prediction to the user
+if (uploaded_filey is not None):
+    st.subheader('''
+             Target LiDAR Image
+             ''')
+    y = tifffile.imread(uploaded_filey)
+    figy = plt.figure()
+    plt.xticks([])
+    plt.yticks([])
+    plt.imshow(y)
+    st.pyplot(figy)
