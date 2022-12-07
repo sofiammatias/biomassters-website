@@ -2,12 +2,8 @@ import streamlit as st
 import tifffile
 import requests
 import pandas as pd
-import streamlit as st
-import os
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from contextlib import contextmanager, redirect_stdout
 from io import StringIO
 
 

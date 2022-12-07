@@ -3,3 +3,5 @@ requests
 tifffile
 pandas
 numpy
+matplotlib.pyplot
+io
