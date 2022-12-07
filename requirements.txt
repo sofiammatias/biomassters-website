@@ -4,4 +4,3 @@ tifffile
 pandas
 numpy
 matplotlib
-io
