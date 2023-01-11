@@ -132,7 +132,8 @@ if (uploaded_file2 is not None):
 '''
 
 if (uploaded_file1 is not None) and (uploaded_file2 is not None):
-    url = 'https://biomassters-wsbi2k6wha-ew.a.run.app/predict/'
+    url = 'http://127.0.0.1:8000/'
+    #url = 'https://biomassters-wsbi2k6wha-ew.a.run.app/predict/'
     #files = [('files', tifffile.imread(uploaded_file1)), ('files', tifffile.imread(uploaded_file2))]
     files = [('files', XS1), ('files', XS2)]
 
