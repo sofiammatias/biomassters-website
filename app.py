@@ -138,7 +138,7 @@ if (uploaded_file1 is not None) and (uploaded_file2 is not None):
 
     response = requests.post(url=url, files=files).json()
 
-    array =np.array(response["file"]).reshape(256,256,1)/256
+    array = np.array(response["file"]).reshape(256,256,1)/256
 
     fig = plt.figure()
     plt.xticks([])
