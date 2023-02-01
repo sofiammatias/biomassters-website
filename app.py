@@ -207,8 +207,9 @@ if (uploaded_filey is not None):
     st.pyplot(figy)
 
     st.markdown(f'''
-        See GitHub repositories
+        ### See GitHub repositories
 
         Model code: https://github.com/sofiammatias/project-biomassters
+
         Website: https://github.com/sofiammatias/biomassters-website
     ''')
