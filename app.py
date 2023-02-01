@@ -4,25 +4,49 @@ import requests
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
-
+import os
+from io import BytesIO
 
 
 '''
 # BioMassters App
 '''
+filelist1=[]
+filelist2=[]
+
+local_path = "./data/"
+for root, dirs, files in os.walk(local_path):
+   for name in files:
+       if "S1" in name:
+           filelist1.append(name)
+       if "S2" in name:
+           filelist2.append(name)
+       if "agbm" in name:
+           targetfilepath = local_path + name
+filelist1 = sorted(filelist1)
+filelist2 = sorted(filelist2)
+
+st.image('https://images.unsplash.com/photo-1604009506606-fd4989d50e6d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80',
+         caption= "Photo by Chelsea Bock on Unsplash (https://unsplash.com/@chelseabock)")
+
 
 st.markdown(f'''
-See an image being predicted by our model in real time!!
-''')
+In order to understand how much carbon a forest contains (its carbon stock) and
+how it changes (carbon flux), it is important to have an accurate measure of AGBM.
+In turn, such information allows landowners and policy makers to make better
+decisions for the conservation of forests.
 
-st.image('https://images.unsplash.com/photo-1604009506606-fd4989d50e6d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80')
-#         caption='Photo by <a href="https://unsplash.com/@chelseabock?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Chelsea Bock</a> on <a href="https://unsplash.com/s/photos/forest?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>')
+This app runs a model that is able to predict AGBM in a certain forest area
+using satellite imagery from satellites Sentinel1 and Sentinel2.
 
-st.markdown('''
-            See the BioMassters challenge in this link: [https://www.drivendata.org/competitions/99/biomass-estimation/page/534/](https://www.drivendata.org/competitions/99/biomass-estimation/page/534/)
+See the BioMassters challenge in this link: [https://www.drivendata.org/competitions/biomass-estimation/](https://www.drivendata.org/competitions/99/biomass-estimation/page/534/)
+
+We've ranked #61 in this competition! See [our rank](https://www.drivendata.org/competitions/99/biomass-estimation/leaderboard/?page=2) (LeWagonTeam)
             ''')
 
+'''
+### See an image being predicted by our model in real time!!
+'''
 
 col1, col2 = st.columns(2)
 
@@ -30,10 +54,28 @@ uploaded_file1 = None
 uploaded_file2 = None
 
 with col1:
-    uploaded_file1 = st.file_uploader("Choose S1 file:")
+    file1 = st.selectbox(
+        'Choose one Sentinel 1 (S1) file:',
+        (filelist1), index = 7)
+    filepath1 = local_path + file1
+    with open(filepath1, "rb") as fh:
+        uploaded_file1 = BytesIO(fh.read())
 
 with col2:
-    uploaded_file2 = st.file_uploader("Choose S2 file:")
+    file2 = st.selectbox(
+        'Choose one Sentinel 2 (S2) file:',
+        (filelist2), index = 7)
+    filepath2 = local_path + file2
+    with open(filepath2, "rb") as fh:
+        uploaded_file2 = BytesIO(fh.read())
+
+
+
+#with col1:
+#    uploaded_file1 = st.file_uploader("Choose S1 file:")
+
+#with col2:
+#    uploaded_file2 = st.file_uploader("Choose S2 file:")
 
 if (uploaded_file1 is not None):
     with st.expander("S1 SATELLITE IMAGES"):
@@ -128,7 +170,7 @@ if (uploaded_file2 is not None):
             st.pyplot(fig15)
 
 '''
-# Predicted Image
+# Model Predicted Image
 '''
 
 if (uploaded_file1 is not None) and (uploaded_file2 is not None):
@@ -137,25 +179,34 @@ if (uploaded_file1 is not None) and (uploaded_file2 is not None):
     files = [('files', XS1), ('files', XS2)]
 
     response = requests.post(url=url, files=files).json()
+    #with st.echo():
+
 
     array = np.array(response["file"]).reshape(256,256,1)/256
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(10,10))
     plt.xticks([])
     plt.yticks([])
     plt.imshow(array)
     st.pyplot(fig)
 
-
-uploaded_filey = st.file_uploader("Choose a target file:")
+with open(targetfilepath, "rb") as fh:
+    uploaded_filey = BytesIO(fh.read())
 
 if (uploaded_filey is not None):
-    st.subheader('''
-             Target LiDAR Image
-             ''')
+    '''
+    # What We Should Get
+    ## Ground Truth with LiDAR
+    '''
     y = tifffile.imread(uploaded_filey)
     figy = plt.figure()
     plt.xticks([])
     plt.yticks([])
     plt.imshow(y)
     st.pyplot(figy)
+
+    st.markdown(f'''
+        See GitHub repos:
+        (https://github.com/sofiammatias/project-biomassters)
+        (https://github.com/sofiammatias/biomassters-website)
+    ''')

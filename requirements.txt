@@ -4,3 +4,4 @@ tifffile
 pandas
 numpy
 matplotlib
+os
